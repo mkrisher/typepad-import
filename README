@@ -1,0 +1,22 @@
+Typepad Import Rake task for Rails
+Release Notes
+Revised: 03/17/09 Pre-Release 1
+Mike Krisher
+mike@mikekrisher.com
+
+Git: git://github.com/mkrisher/typepad-import.git
+
+-------------------------------------------
+CHANGELOG:
+
+03/17/09: PR1
+
+- starting the rake task to import data from Typepad feed
+
+-------------------------------------------
+Description:
+
+- this rake task will ask the user for a Typepad feed URL and 
+	will import that feed into a local database table. Can be used 
+	for archiving, legacy data use in new Rails app, etc...
+	

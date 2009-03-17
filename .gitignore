@@ -1,3 +1,2 @@
 .DS_Store
-database.yml
-config/database.yml
+config/database.rb

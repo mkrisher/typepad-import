@@ -1,4 +1,10 @@
+=begin
+  TODO download any images referenced in the content, if currently hosted on typepad
+  TODO remove image from content if it can not be downloaded and stored locally
+=end
+
 require 'open-uri'
+require 'net/http'
 
 namespace :typepad do
   
@@ -41,7 +47,6 @@ namespace :typepad do
   def parse_feed
     remove_previous_entries
     @items = @content["rss"]["channel"]["item"]
-    puts @items[0].inspect
     if !@items.nil?
       for item in @items do
           item["pubDate"] ||= ""
@@ -80,7 +85,25 @@ namespace :typepad do
     # need to look for any image sources in the content
     # pull them down into local /images directory
     # then rewrite the src attribute inline
+    # src pattern: src="http://owenemma.typepad.com/.a/6a00d8350edaf269e2011168a53eaa970c-800wi"
+    results = content.scan(/src=\".*?\"/) {|m| copy_image_locally m.gsub!("src=", "").gsub!("\"", "")}
+    #puts results.length
     content
+  end
+  
+  def copy_image_locally(img)
+    begin
+      if img =~ /typepad/
+        puts "writing: " << "public/images/" << img.gsub!(@base, "").gsub!("/.a/", "") << ".jpg"
+        open("public/images/" << img.gsub!(@base, "").gsub!("/.a/", "") << ".jpg","w").write(open(img).read)
+        # update the link in the content
+      else
+        puts "image is not hosted on typepad, ignore"
+      end
+    rescue
+      # should remove the image from the content as well
+      puts "was not able to capture " << img << " locally"
+    end
   end
   
   # add entry to database

@@ -1,6 +1,5 @@
 =begin
-  TODO download any images referenced in the content, if currently hosted on typepad
-  TODO remove image from content if it can not be downloaded and stored locally
+  TODO remove links placed around typepad images
 =end
 
 require 'open-uri'
@@ -54,7 +53,7 @@ namespace :typepad do
           item["guid"] ||= ""
           item["title"] ||= ""
           item["description"] ||= ""
-          item["encoded"] ||= ""
+          clean_content(item["encoded"] ||= "")
           item["link"] ||= ""
           params = { 
             :pubdate => item["pubDate"], 
@@ -62,7 +61,7 @@ namespace :typepad do
             :guid => relative_link(item["guid"]), 
             :title => item["title"], 
             :description => item["description"], 
-            :content => correct_image_paths(item["encoded"]), 
+            :content => @content, 
             :link => relative_link(item["link"])
           }
           insert_entry(params)
@@ -81,29 +80,38 @@ namespace :typepad do
     link.gsub!(@base, "")
   end
   
-  def correct_image_paths(content)
-    # need to look for any image sources in the content
-    # pull them down into local /images directory
-    # then rewrite the src attribute inline
-    # src pattern: src="http://owenemma.typepad.com/.a/6a00d8350edaf269e2011168a53eaa970c-800wi"
-    results = content.scan(/src=\".*?\"/) {|m| copy_image_locally m.gsub!("src=", "").gsub!("\"", "")}
-    #puts results.length
-    content
+  # prepare the main content to be served locally
+  def clean_content(content)
+    @content = content
+    unless content.nil?
+      correct_image_paths
+    end
+  end
+  
+  # correct any embedded image paths in the content
+  def correct_image_paths
+    results = @content.scan(/src=\".*?\"/)
+    # {|m| copy_image_locally m.gsub!("src=", "").gsub!("\"", "")}
+    results.each do |result|
+      copy_image_locally result.gsub!("src=", "").gsub!("\"", "")
+    end
   end
   
   def copy_image_locally(img)
     begin
+      # if an image is stored on typepad servers, copy it locally
       if img =~ /typepad/
-        puts "writing: " << "public/images/" << img.gsub!(@base, "").gsub!("/.a/", "") << ".jpg"
-        open("public/images/" << img.gsub!(@base, "").gsub!("/.a/", "") << ".jpg","w").write(open(img).read)
+        open("public/images/" << img.gsub(@base.gsub("weblog",""), "").gsub(".a/", "") << ".jpg","w").write(open(img).read)
         # update the link in the content
-      else
-        puts "image is not hosted on typepad, ignore"
+        update_image_source(img)
       end
     rescue
-      # should remove the image from the content as well
       puts "was not able to capture " << img << " locally"
     end
+  end
+  
+  def update_image_source(img)
+    @content.gsub!(img, "/images/" << img.gsub(@base.gsub("weblog",""), "").gsub(".a/", "") << ".jpg")
   end
   
   # add entry to database

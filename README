@@ -9,6 +9,11 @@ Git: git://github.com/mkrisher/typepad-import.git
 -------------------------------------------
 CHANGELOG:
 
+03/18/09: PR2
+
+- task will now accept a url and parse the feed, adding entries to the 
+	database table. Just needs some content massaging
+
 03/17/09: PR1
 
 - starting the rake task to import data from Typepad feed

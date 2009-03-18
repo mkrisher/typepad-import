@@ -1,0 +1,4 @@
+# Put into <yourapp>/config/typepad.yml
+typepad:
+  feed: http://owenemma.typepad.com/weblog/rss.xml
+  new_image_path: /images/typepad

@@ -104,7 +104,7 @@ namespace :typepad do
     begin
       # if an image is stored on typepad servers, copy it locally
       if img =~ /typepad/
-        open("public/images/" << img.gsub(@base.gsub("weblog",""), "").gsub(".a/", "") << ".jpg","w").write(open(img).read)
+        open("public/images/"  << img.gsub(@base.gsub("weblog",""), "").gsub(".a/", "") << ".jpg","w").write(open(img).read)
         # update the link in the content
         update_image_source(img)
       end

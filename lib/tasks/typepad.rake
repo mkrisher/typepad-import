@@ -1,5 +1,6 @@
 =begin
   TODO remove links placed around typepad images
+  TODO check differences between atom, rss1 and rss2, maybe require rss2
 =end
 
 require 'open-uri'
@@ -85,6 +86,7 @@ namespace :typepad do
     @content = content
     unless content.nil?
       correct_image_paths
+      remove_typepad_links
     end
   end
   
@@ -97,6 +99,7 @@ namespace :typepad do
     end
   end
   
+  # pull down a copy of all images stored on typepad
   def copy_image_locally(img)
     begin
       # if an image is stored on typepad servers, copy it locally
@@ -110,8 +113,22 @@ namespace :typepad do
     end
   end
   
+  # update the image src path, once we have a local copy
   def update_image_source(img)
     @content.gsub!(img, "/images/" << img.gsub(@base.gsub("weblog",""), "").gsub(".a/", "") << ".jpg")
+  end
+  
+  # remove the extra links around the typepad images
+  def remove_typepad_links
+    results = @content.scan(/<a href=.*?<\/a>/)
+
+    results.each do |result|
+      # if result contains an image with an image-full class
+      if result =~ /image-full/
+        temp = result.sub(/<a href=.*?>/, "").sub(/<\/a>/, "")
+        @content.sub!(result, temp)
+      end
+    end
   end
   
   # add entry to database

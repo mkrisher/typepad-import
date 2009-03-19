@@ -1,6 +1,6 @@
 Typepad Import Rake task for Rails
 Release Notes
-Revised: 03/17/09 Pre-Release 1
+Revised: 03/19/09 Release 1
 Mike Krisher
 mike@mikekrisher.com
 
@@ -8,6 +8,14 @@ Git: git://github.com/mkrisher/typepad-import.git
 
 -------------------------------------------
 CHANGELOG:
+
+03/19/09: R1
+
+- task will now accept url from a config or prompt, will parse the feed
+	adding entries to the database table. While doing so it will fix the 
+	typepad links and make them relative, as well as pull in local copies
+	of embedded images and change the paths in the content to be local.
+
 
 03/18/09: PR2
 
@@ -24,4 +32,16 @@ Description:
 - this rake task will ask the user for a Typepad feed URL and 
 	will import that feed into a local database table. Can be used 
 	for archiving, legacy data use in new Rails app, etc...
+
+-------------------------------------------
+Usage:
+
+- the task has a couple of dependencies. the first is the database table.
+	1) run rake db:migrate
+	
+	the task writes images to the /public/images directory if there are any 
+	images embedded in posts. when writing the local copy, links are updated 
+	to reference the local paths. in addition to the images, permalinks are 
+	rewritten as well to be relative.
+	2) be sure to add routes for /:year/:month/:link
 	

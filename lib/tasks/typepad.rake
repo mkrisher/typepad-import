@@ -1,5 +1,4 @@
 =begin
-  TODO remove links placed around typepad images
   TODO check differences between atom, rss1 and rss2, maybe require rss2
 =end
 
@@ -78,7 +77,8 @@ namespace :typepad do
 
   # makes links relative by stripping out the base typepad URL
   def relative_link(link)
-    link.gsub!(@base, "")
+    # REMEMBER TO ADD ROUTES TO HANDLE THESE LINKS
+    link.gsub!(@base, "").gsub!(".html", "").gsub!("-", "_")
   end
   
   # prepare the main content to be served locally
